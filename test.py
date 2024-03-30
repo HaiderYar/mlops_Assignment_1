@@ -1,54 +1,39 @@
 import unittest
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
+from app import app
 
-class TestLinearRegressionModel(unittest.TestCase):
+class TestApp(unittest.TestCase):
+
     def setUp(self):
-        # Load the dataset
-        self.data = pd.read_csv('SongDetails.csv')
+        app.testing = True
+        self.app = app.test_client()
 
-    def test_load_dataset(self):
-        # Check if the dataset is loaded properly
-        self.assertFalse(self.data.empty, "Dataset is empty")
+    def test_basic_input(self):
+        result = self.app.post('/index', data=dict(a='3', b='5'))
+        self.assertIn(b'Predicted Y for X = [[3.]] is 4.2', result.data)
 
-    def test_split_data(self):
-        # Split the data into features (X) and target variable (y)
-        X = self.data.drop(['popularity'], axis=1)
-        y = self.data['popularity']
+    def test_large_input(self):
+        result = self.app.post('/index', data=dict(a='15', b='25'))
+        self.assertIn(b'Predicted Y for X = [[15.]] is 16.6', result.data)
 
-        # Split the data into training and testing sets
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    def test_negative_input(self):
+        result = self.app.post('/index', data=dict(a='-4', b='-2'))
+        self.assertIn(b'Predicted Y for X = [[-4.]] is -1.8', result.data)
 
-        # Check if the data is split correctly
-        self.assertEqual(len(X_train), int(0.8 * len(X)), "Incorrect train-test split size")
+    def test_decimal_input(self):
+        result = self.app.post('/index', data=dict(a='2.5', b='3.5'))
+        self.assertIn(b'Predicted Y for X = [[2.5]] is 3.3', result.data)
 
-    def test_model_performance(self):
-        # Load the dataset
-        data = pd.read_csv('SongDetails.csv')
+    def test_string_input(self):
+        result = self.app.post('/index', data=dict(a='abc', b='def'))
+        self.assertIn(b'Error', result.data)  # Assuming error message handling for non-numeric inputs
 
-        # Split the data into features (X) and target variable (y)
-        X = data.drop(['popularity'], axis=1)
-        y = data['popularity']
+    def test_out_of_range_input(self):
+        result = self.app.post('/index', data=dict(a='20', b='22'))
+        self.assertIn(b'Input value is beyond the trained range', result.data)
 
-        # Split the data into training and testing sets
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    def test_missing_input(self):
+        result = self.app.post('/index', data=dict())
+        self.assertIn(b'Error', result.data)  # Assuming error message handling for missing input fields
 
-        # Initialize the Linear Regression model
-        model = LinearRegression()
-
-        # Fit the model to the training data
-        model.fit(X_train, y_train)
-
-        # Predict on the testing data
-        y_pred = model.predict(X_test)
-
-        # Evaluate the model using Mean Squared Error
-        mse = mean_squared_error(y_test, y_pred)
-
-        # Check if Mean Squared Error is within acceptable range
-        self.assertLessEqual(mse, 500, "Mean Squared Error too high")
-
-if __name__ == '__main__':
+if __name__ == '_main_':
     unittest.main()
