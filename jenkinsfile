@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build("Assignment_1:${env.BUILD_ID}")
+                }
+            }
+        }
+        stage('Push to DockerHub') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerHubCredentials_Assignment_1') {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+    }
+    post {
+        success {
+            mail to: 'haider.yar2011@gmail.com',
+                 subject: "Build Successful: ${env.BUILD_NUMBER}",
+                 body: "The Jenkins build number ${env.BUILD_NUMBER} was successful."
+        }
+    }
+}
