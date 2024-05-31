@@ -3,6 +3,7 @@ from app import app
 
 class TestApp(unittest.TestCase):
 
+
     def setUp(self):
         app.testing = True
         self.app = app.test_client()
@@ -24,7 +25,8 @@ class TestApp(unittest.TestCase):
         self.assertIn(b'Predicted Y for X = [[2.5]] is 3.3', result.data)
 
     def test_string_input(self):
-        result = self.app.post('/index', data=dict(a='abc', b='def'))
+        result = self.app.post('/index', data=dict(a='abc',
+                                                   b='def'))
         self.assertIn(b'Error', result.data)  # Assuming error message handling for non-numeric inputs
 
     def test_out_of_range_input(self):
@@ -34,6 +36,7 @@ class TestApp(unittest.TestCase):
     def test_missing_input(self):
         result = self.app.post('/index', data=dict())
         self.assertIn(b'Error', result.data)  # Assuming error message handling for missing input fields
+
 
 if __name__ == '_main_':
     unittest.main()
