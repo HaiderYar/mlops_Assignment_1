@@ -18,10 +18,8 @@ def index():
 
     model = LinearRegression()
     model.fit(x, y)
-
     x_new = np.array([[float(input_x)]])
     y_new = model.predict(x_new)
-
     return f'Predicted Y for X = {x_new} is {y_new[0]}'
 
 
