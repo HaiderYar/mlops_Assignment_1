@@ -3,7 +3,7 @@ name: Check Python Code Quality
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   flake8:
