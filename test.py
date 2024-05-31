@@ -28,6 +28,7 @@ class TestApp(unittest.TestCase):
         result = self.app.post('/index', data=dict(a='abc',
                                                    b='def'))
         self.assertIn(b'Error', result.data)
+
     def test_out_of_range_input(self):
         result = self.app.post('/index', data=dict(a='20', b='22'))
         self.assertIn(b'Input value is beyond the trained range', result.data)
@@ -39,4 +40,4 @@ class TestApp(unittest.TestCase):
 
 if __name__ == '_main_':
     unittest.main()
-    
+   
