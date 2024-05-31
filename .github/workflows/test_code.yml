@@ -2,8 +2,8 @@ name: Python Unit Tests
 
 on:
   pull_request:
-    branches:
-      - test
+      branches:
+        - main
 
 jobs:
   test:
